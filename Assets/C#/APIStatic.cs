@@ -8,6 +8,9 @@ public class API : MonoBehaviour
     void Start()
     {
         #region 靜態屬性
+        //與非靜態的差異
+        //1.不需要實體物件
+        //2.不需要取得實體物件
         //取得 get
         //語法
         //類別名稱,靜態屬性
