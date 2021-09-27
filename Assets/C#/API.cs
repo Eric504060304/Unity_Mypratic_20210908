@@ -42,5 +42,10 @@ public class API : MonoBehaviour
         #region 靜態屬性
         //print("經過多久" + Time.timeSinceLevelLoad);
         #endregion
+
+        #region 靜態方法
+        float h = Input.GetAxis("Horizontal");
+        print("水平值" + h);
+        #endregion
     }
 }
