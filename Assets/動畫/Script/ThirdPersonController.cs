@@ -1,5 +1,7 @@
 using UnityEngine;        //引用Unity API(倉庫-資料與功能)
 using UnityEngine.Video;  //引用 影片 API
+
+
 //修飾詞 類別 類別名稱 : 繼承類別
 //MonoBehaviour 基底類別，要掛在物件上衣定要繼承
 //繼承後會享有該類別的成員
@@ -57,6 +59,12 @@ public class ThirdPersonController : MonoBehaviour
     public Sprite sprite; // 圖片 png,jpeg 不支援 gif
     public Texture2D texture2D; //2D圖片 支援 png jpeg
     public Material material; //材質球
+
+    private AudioSource aud;
+    private Rigidbody rig;
+    private Animator ani;
+
+    public GameObject playerObject;
     #endregion
     #endregion
 
@@ -237,10 +245,19 @@ public class ThirdPersonController : MonoBehaviour
         //數值以參數的方式呼叫
         Skill(500);
 
+        //要取得腳本的遊戲物件可以使用關鍵字gameObject
         //需求:傷害值500，技能特效用預設值，音效換成咻咻咻
         //有多個選填式參數十可使用指名參數語法: 參數名稱: 值
         Skill(500, sound: "咻咻咻");
         print(BMI(75, 1.7f, "Eric"));
+        //取得元件的方式
+        //1. 物件欄位名稱.取得原件(類型(元件類型))當作 元件類型;
+        aud = playerObject.GetComponent(typeof(AudioSource)) as AudioSource;
+        //2. 此腳本遊戲物件.取得原件<泛型>();
+        rig = gameObject.GetComponent<Rigidbody>();
+        //3. 取得元件<泛型>()
+        ani = GetComponent<Animator>();
+
     }
 
 
