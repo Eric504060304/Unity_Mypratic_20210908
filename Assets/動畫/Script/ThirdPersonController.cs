@@ -47,7 +47,7 @@ public class ThirdPersonController : MonoBehaviour
     public Vector2 v2Custom = new Vector2(7.5f, 100.9f);
     public Vector3 v3 = new Vector3(1, 2, 3);
     public Vector4 v4 = new Vector4(1, 2, 3, 4);
-    public bool isGround;
+
 
     //按鍵 列舉資料 enum
     public KeyCode key;
@@ -65,7 +65,13 @@ public class ThirdPersonController : MonoBehaviour
     private Rigidbody rig;
     private Animator ani;
 
+    [Header("檢查地面資料")]
+    [Tooltip("用來檢查角色是否在地面上")]
+    public bool isGround;
     public GameObject playerObject;
+    public Vector3 v3CheckGroundoffset;
+    [Range(0, 3)]
+    public float checkGroundRadius = 0.2f;
     #endregion
     #endregion
 
@@ -138,6 +144,7 @@ public class ThirdPersonController : MonoBehaviour
         return 999;
     }
 
+
     /**不使用參數
     private void Skill100()
     {
@@ -152,13 +159,13 @@ public class ThirdPersonController : MonoBehaviour
     //參數語法: 資料類型 參數名稱 指定 預設值
     //有預設值的參數可以不輸入引述，選填式參數
     //*選填式參數只能放在()又變
-    private void Skill(int damage, string effect = "灰塵特效", string sound = "嘎嘎嘎")
+    /*private void Skill(int damage, string effect = "灰塵特效", string sound = "嘎嘎嘎")
     {
-        print("參數版本 - 傷害值:" + damage);
-        print("參數版本 - 技能特效" + effect);
-        print("參數版本 - 音效" + sound);
+        //print("參數版本 - 傷害值:" + damage);
+        //print("參數版本 - 技能特效" + effect);
+        //print("參數版本 - 音效" + sound);
     }
-
+    */
     /*錯誤示範:選填式參數沒有在()右邊
      * private void Skill(int damage, string effect ="灰塵特效",int damage(這個不是選填式參數))
     {
@@ -186,8 +193,8 @@ public class ThirdPersonController : MonoBehaviour
     {
         //請取消 Animator 屬性 Apply Root Motion :狗選時使用動畫位移資訊
         //韌體、加速度 = 三圍向量 - 加速度用來控制鋼體三個軸向的運動速度
-        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove+
-                       Vector3.right * MoveInput("Horizontal") * speedMove+
+        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove +
+                       Vector3.right * MoveInput("Horizontal") * speedMove +
                        Vector3.up * rig.velocity.y;
     }
     private float MoveInput(string axisName)
@@ -196,17 +203,31 @@ public class ThirdPersonController : MonoBehaviour
     }
     private bool checkground()
     {
-        return false;
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position +
+            transform.right * v3CheckGroundoffset.x +
+            transform.up * v3CheckGroundoffset.y +
+            transform.forward * v3CheckGroundoffset.z,
+            checkGroundRadius, 1 << 3);
+        //print("球體碰到第一個物件: " + hits[0].name);
+
+        //傳回 碰撞陣列 > 0 - 只要碰到指定塗層物件就代表在地面上
+        return hits.Length > 0;
     }
     private void Jump()
     {
-
+        print("是否在地面上:" + checkground());
     }
     private void UpdateAnimation()
     {
 
     }
-    
+    private void Update()
+    {
+        checkground();
+        Jump();
+    }
+
     #endregion
 
     #region 事件 Event
@@ -249,7 +270,7 @@ public class ThirdPersonController : MonoBehaviour
         Skill100();
         Skill150();**/
         //數值以參數的方式呼叫
-        Skill(500);
+        //Skill(500);
 
         //要取得腳本的遊戲物件可以使用關鍵字gameObject
         //需求:傷害值500，技能特效用預設值，音效換成咻咻咻
@@ -273,7 +294,7 @@ public class ThirdPersonController : MonoBehaviour
     private void FixedUpdate()
     {
         Move(speed);
-        
+
     }
     //繪製圖示事件:
     //在Unity Editor 內繪製圖是輔助開發，發布後會自動隱藏
@@ -281,7 +302,13 @@ public class ThirdPersonController : MonoBehaviour
     {
         //1. 指定顏色
         //2. 繪製圖形
-        Gizmos.color=new Color(1, 0, 0.2f, 0.3f);
-        Gizmos.DrawSphere(new Vector3(75, 2, 77), 1);
+        Gizmos.color = new Color(1, 0, 0.2f, 0.3f);
+
+        //transform 與此腳本在同階層的Transform 元件
+        Gizmos.DrawSphere(
+            transform.position +
+            transform.right * v3CheckGroundoffset.x +
+            transform.up * v3CheckGroundoffset.y +
+            transform.forward * v3CheckGroundoffset.z, checkGroundRadius);
     }
 }

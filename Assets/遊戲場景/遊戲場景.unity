@@ -664,7 +664,7 @@ GameObject:
   - component: {fileID: 413859814}
   - component: {fileID: 413859813}
   - component: {fileID: 413859812}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: "\u5730\u5F62"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1079,7 +1079,6 @@ MonoBehaviour:
   v2Custom: {x: 7.5, y: 100.9}
   v3: {x: 1, y: 2, z: 3}
   v4: {x: 1, y: 2, z: 3, w: 4}
-  isGround: 0
   key: 0
   move: 119
   jump: 32
@@ -1088,7 +1087,10 @@ MonoBehaviour:
   sprite: {fileID: 0}
   texture2D: {fileID: 0}
   material: {fileID: 0}
+  isGround: 0
   playerObject: {fileID: 619433048}
+  v3CheckGroundoffset: {x: 0, y: 0, z: 0}
+  checkGroundRadius: 0.2
 --- !u!54 &619433050
 Rigidbody:
   m_ObjectHideFlags: 0
