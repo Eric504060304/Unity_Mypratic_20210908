@@ -39,6 +39,8 @@ public class ThirdPersonController : MonoBehaviour
     public Color yellow = Color.yellow;
     public Color color1 = new Color(0.5f, 0.5f, 0);                //自訂顏色RGB R G A(Apparent)
     public Color color2 = new Color(0, 0.5f, 0.5f, 0.5f);//RGBA    //自訂顏色RGBA
+    [Header("跳躍高度"),Range(0,1000)]
+    public int jump = 100;
     // 座標 Vector 2-4
     public Vector2 v2;//沒有設置預設值就是0
     public Vector2 v2Right = Vector2.right;//紅色X軸右邊
@@ -52,7 +54,7 @@ public class ThirdPersonController : MonoBehaviour
     //按鍵 列舉資料 enum
     public KeyCode key;
     public KeyCode move = KeyCode.W;
-    public KeyCode jump = KeyCode.Space;
+    public KeyCode keyjump = KeyCode.Space;
 
     //遊戲資料類型 : 不能指定預設值
     public AudioClip sound; //音效 mp3, ogg , wav
@@ -72,6 +74,7 @@ public class ThirdPersonController : MonoBehaviour
     public Vector3 v3CheckGroundoffset;
     [Range(0, 3)]
     public float checkGroundRadius = 0.2f;
+    private string animatorParWalk;
     #endregion
     #endregion
 
@@ -125,6 +128,7 @@ public class ThirdPersonController : MonoBehaviour
             hp = 100;
             print("HP:" + hp);
         }**/
+    private bool keyJump { get=>Input.GetKeyDown(KeyCode.Space); }
     #endregion
 
     #region 方法 Method
@@ -216,16 +220,41 @@ public class ThirdPersonController : MonoBehaviour
     }
     private void Jump()
     {
-        print("是否在地面上:" + checkground());
+        //print("是否在地面上:" + checkground());
+
+        //&& 並且運算子
+        //如果在地面上並且按下空白鍵 就跳躍
+        if (checkground() && Input.GetKeyDown(KeyCode.Space)) 
+        {
+            //鋼體添加推力(此物件的上放*跳躍)
+            rig.AddForce(transform.up * jump);
+        }
     }
     private void UpdateAnimation()
     {
+        //練習
+        //預期成果
+        //按下前或後時，將布林值設定為true
+        //沒有按時 將布林值設為false
+        //Input 
+        //if(選擇條件)
+        //!=、==比較運算子 (選擇條件)
 
+        //當玩家往前或移動時true
+        //沒有按下前或後時 false
+        //垂直值 不等於0 就代表 true
+        //垂直值 等於0 就代表false
+
+        //前後 不等於 0 或 左右不等於 0都是走路
+        // || 或者
+
+        ani.SetBool(animatorParWalk, MoveInput("Vertical")!=0||MoveInput("Horizontal")!=0);
     }
     private void Update()
     {
         checkground();
         Jump();
+        UpdateAnimation();
     }
 
     #endregion
