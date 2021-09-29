@@ -47,6 +47,7 @@ public class ThirdPersonController : MonoBehaviour
     public Vector2 v2Custom = new Vector2(7.5f, 100.9f);
     public Vector3 v3 = new Vector3(1, 2, 3);
     public Vector4 v4 = new Vector4(1, 2, 3, 4);
+    public bool isGround;
 
     //按鍵 列舉資料 enum
     public KeyCode key;
@@ -172,28 +173,32 @@ public class ThirdPersonController : MonoBehaviour
     /// <param name="height">身高，單位為公尺</param>
     /// <param name="name">名稱，測量者的名稱</param>
     /// <returns>BMI 的結果</returns>
-    private float BMI(float weight, float height, string name = "測試")
+    /*private float BMI(float weight, float height, string name = "測試")
     {
         print(name + "的BMI");
         return weight / (height * height);
-    }
+    }*/
     /// <summary>
     /// 移動速度
     /// </summary>
     /// <param name="speed"></param>
-    private void Movement(float speed)
+    private void Move(float speedMove)
     {
-        print("移動速度" + speed);
+        //請取消 Animator 屬性 Apply Root Motion :狗選時使用動畫位移資訊
+        //韌體、加速度 = 三圍向量 - 加速度用來控制鋼體三個軸向的運動速度
+        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove+
+                       Vector3.right * MoveInput("Horizontal") * speedMove+
+                       Vector3.up * rig.velocity.y;
     }
-    private float MoveInput()
+    private float MoveInput(string axisName)
     {
-        return 0;
+        return Input.GetAxis(axisName);
     }
     private bool checkground()
     {
         return false;
     }
-    private void JumpUp()
+    private void Jump()
     {
 
     }
@@ -201,6 +206,7 @@ public class ThirdPersonController : MonoBehaviour
     {
 
     }
+    
     #endregion
 
     #region 事件 Event
@@ -248,8 +254,8 @@ public class ThirdPersonController : MonoBehaviour
         //要取得腳本的遊戲物件可以使用關鍵字gameObject
         //需求:傷害值500，技能特效用預設值，音效換成咻咻咻
         //有多個選填式參數十可使用指名參數語法: 參數名稱: 值
-        Skill(500, sound: "咻咻咻");
-        print(BMI(75, 1.7f, "Eric"));
+        //Skill(500, sound: "咻咻咻");
+        //print(BMI(75, 1.7f, "Eric"));
         //取得元件的方式
         //1. 物件欄位名稱.取得原件(類型(元件類型))當作 元件類型;
         aud = playerObject.GetComponent(typeof(AudioSource)) as AudioSource;
@@ -262,5 +268,20 @@ public class ThirdPersonController : MonoBehaviour
 
 
     #endregion
-
+    //固定更新事件:固定0.02秒執行一次
+    //處理物理行為，例如rigidbody api
+    private void FixedUpdate()
+    {
+        Move(speed);
+        
+    }
+    //繪製圖示事件:
+    //在Unity Editor 內繪製圖是輔助開發，發布後會自動隱藏
+    private void OnDrawGizmos()
+    {
+        //1. 指定顏色
+        //2. 繪製圖形
+        Gizmos.color=new Color(1, 0, 0.2f, 0.3f);
+        Gizmos.DrawSphere(new Vector3(75, 2, 77), 1);
+    }
 }
