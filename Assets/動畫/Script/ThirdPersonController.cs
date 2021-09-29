@@ -39,7 +39,7 @@ public class ThirdPersonController : MonoBehaviour
     public Color yellow = Color.yellow;
     public Color color1 = new Color(0.5f, 0.5f, 0);                //自訂顏色RGB R G A(Apparent)
     public Color color2 = new Color(0, 0.5f, 0.5f, 0.5f);//RGBA    //自訂顏色RGBA
-    [Header("跳躍高度"),Range(0,1000)]
+    [Header("跳躍高度"), Range(0, 1000)]
     public int jump = 100;
     // 座標 Vector 2-4
     public Vector2 v2;//沒有設置預設值就是0
@@ -69,12 +69,17 @@ public class ThirdPersonController : MonoBehaviour
 
     [Header("檢查地面資料")]
     [Tooltip("用來檢查角色是否在地面上")]
-    public bool isGround;
+    public bool isGrounded;
     public GameObject playerObject;
     public Vector3 v3CheckGroundoffset;
     [Range(0, 3)]
     public float checkGroundRadius = 0.2f;
-    private string animatorParWalk;
+    public string animatorParWalk = "走路開關";
+    public string animatorParRun = "跑步開關";
+    public string animatorParHurt = "受傷開關";
+    public string animatorParDead = "死亡開關";
+    public string animatorParJump = "跳躍觸發";
+    public string animatorParIsGround = "是否在地板上";
     #endregion
     #endregion
 
@@ -128,7 +133,7 @@ public class ThirdPersonController : MonoBehaviour
             hp = 100;
             print("HP:" + hp);
         }**/
-    private bool keyJump { get=>Input.GetKeyDown(KeyCode.Space); }
+    private bool keyJump { get => Input.GetKeyDown(KeyCode.Space); }
     #endregion
 
     #region 方法 Method
@@ -139,10 +144,10 @@ public class ThirdPersonController : MonoBehaviour
     //自訂方法:
     //名稱顏色為淡黃色 - 沒有被呼叫
     //名稱顏色為深黃色 - 有被呼叫
-    private void Test()
+    /*private void Test()
     {
         print("我是自訂方法~");
-    }
+    }*/
     private int ReturnJump()
     {
         return 999;
@@ -215,6 +220,8 @@ public class ThirdPersonController : MonoBehaviour
             checkGroundRadius, 1 << 3);
         //print("球體碰到第一個物件: " + hits[0].name);
 
+        isGrounded = hits.Length > 0;
+
         //傳回 碰撞陣列 > 0 - 只要碰到指定塗層物件就代表在地面上
         return hits.Length > 0;
     }
@@ -224,7 +231,7 @@ public class ThirdPersonController : MonoBehaviour
 
         //&& 並且運算子
         //如果在地面上並且按下空白鍵 就跳躍
-        if (checkground() && Input.GetKeyDown(KeyCode.Space)) 
+        if (checkground() && Input.GetKeyDown(KeyCode.Space))
         {
             //鋼體添加推力(此物件的上放*跳躍)
             rig.AddForce(transform.up * jump);
@@ -248,7 +255,12 @@ public class ThirdPersonController : MonoBehaviour
         //前後 不等於 0 或 左右不等於 0都是走路
         // || 或者
 
-        ani.SetBool(animatorParWalk, MoveInput("Vertical")!=0||MoveInput("Horizontal")!=0);
+        ani.SetBool(animatorParWalk, MoveInput("Vertical") != 0 || MoveInput("Horizontal") != 0);
+        //
+        ani.SetBool(animatorParIsGround, isGrounded);
+        //如果按下跳躍建 就設定跳躍見觸發參數
+        //判斷式 只有一行敘述(只有一個分號) 可以省略大括號
+        if (keyJump) ani.SetTrigger(animatorParJump);
     }
     private void Update()
     {
