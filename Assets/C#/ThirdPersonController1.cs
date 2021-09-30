@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;// 引用 Unity API (倉庫 - 資料與功能)
 using UnityEngine.Video;
 
+
 // 修飾詞 類別 類別名稱 : 繼承類別
 //MonBehaviour Unity 基底類別，要掛在物件上衣定要繼承
 //繼承後會享有該類別的成員
@@ -25,7 +26,7 @@ public class ThirdPersonController1 : MonoBehaviour
     // V Unity 以屬性面板資料為主
     // V 恢復城市預設值請按...>Reset
     // 欄位屬性 : 輔助欄位資料
-    // 欄位屬性與法 : [屬性名稱(屬性值)]
+    // 欄位屬性語法 : [屬性名稱(屬性值)]
     // Headeer 標題
     // Tooltip 提示: 滑鼠停留在欄位名稱上會顯示彈出視窗
     // Range 範圍: 可使用在數值類型資料上，例如: int, float
@@ -52,6 +53,36 @@ public class ThirdPersonController1 : MonoBehaviour
     private AudioSource aud;//聲音元件
     private Rigidbody rig;//鋼體
     private Animator ani;//動畫元件
+
+    /** 作業:怪物欄位
+    [Header("怪物移動速度"),Range(0,10)]
+    public float monstermovespeed = 3.5f;
+    [Header("怪物攻擊力"),Range(0,500)]
+    public int monsterattack = 100;
+    [Header("怪物血量"),Range(0,5000)]
+    public int monsterhp = 350;
+    [Header("怪物追蹤範圍"),Range(0,50)]
+    public float monstertrackrange = 30f;
+    public Vector3 monstermove;
+    [Header("掉落道具")]
+    public GameObject dropGameObject;//這裡我寫錯~直接使用GameObject資料類型，其預設值就是否。
+    [Header("掉落道具機率"),Range(0,1)]
+    public float dropGameObjectrate = 1f;
+
+    [Header("掉落道具音效")]
+    public AudioClip dropGameObjectsound;
+    [Header("受傷音效")]
+    public AudioClip hurtsound;
+    [Header("攻擊音效")]
+    public AudioClip attacksound;
+
+    private AudioSource aud1;
+    private Rigidbody2D rig1;
+    private Animator ani1;
+    */
+
+
+
 
     #region Unity 資料類型
     /** 練習 Unity 資料類型
@@ -136,8 +167,8 @@ public class ThirdPersonController1 : MonoBehaviour
         }
     }
     */
-    
-    
+
+
     public KeyCode KeyJump { get; }
     #endregion
 
@@ -195,6 +226,65 @@ public class ThirdPersonController1 : MonoBehaviour
     }
     */
     #endregion
+
+    /** 作業 NPC 方法
+
+    /// <summary>
+    /// 對話功能
+    /// </summary>
+    /// <param name="dialogue">NPC 要說的對話內容</param>
+    private void Npctalk(string dialogue)//需要好好練習
+    {
+
+    }
+    /// <summary>
+    /// 開以商店
+    /// </summary>
+    /// <returns></returns>
+    public bool Openshop()
+    {
+        return true;
+    }
+    /// <summary>
+    /// 購買道具
+    /// </summary>
+    /// <param name="obejectprice">道具價格預設100</param>
+    /// <returns></returns>
+    public int Buyobject(int obejectprice = 100)
+    {
+        return 0;
+    }
+    /// <summary>
+    /// 取得任務
+    /// </summary>
+    /// <param name="missionnumber">任務編號</param>
+    public void Getmission(int missionnumber)
+    {
+
+    }
+    /// <summary>
+    /// 更新任務
+    /// </summary>
+    /// <param name="obtainmissionobject">任務道具數量</param>
+    /// <returns></returns>
+    private int MissionUpdate(int obtainmissionobject = 1)
+    {
+        return 0;
+    }
+    /// <summary>
+    /// 完成任務
+    /// </summary>
+    /// <param name="missionnumber">任務編號</param>
+    /// <returns></returns>
+    private bool MissionComplete(int missionnumber)
+    {
+        return false;
+    }
+    */
+
+
+
+
     #endregion
 
     #region 事件 Event
