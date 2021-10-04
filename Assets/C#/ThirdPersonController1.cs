@@ -59,6 +59,8 @@ public class ThirdPersonController1 : MonoBehaviour
     private AudioSource aud;//聲音元件
     private Rigidbody rig;//鋼體
     private Animator ani;//動畫元件
+    [Header("面向速度"),Range(0,50)]
+    public float speedLookAt = 2;
 
     /** 作業:怪物欄位
     [Header("怪物移動速度"),Range(0,10)]
@@ -329,15 +331,28 @@ public class ThirdPersonController1 : MonoBehaviour
         return false;
     }
     */
-
-
-
-
+    
+    ///<summary>
+    ///面相前方: 面向攝影機前方位置
+    /// </summary>
+    private void LookAtForward()
+    {
+        //垂直軸向 取絕對值 後大於0.1 就處理 面向
+        if (MoveInput("Vertical") > 0.1f)
+        {
+            //取得前方角度 = 四元.面相角度(前方座標-本身座標)
+            Quaternion angle = Quaternion.LookRotation(thirdPersonCamera.posForward - transform.position);
+            //此物件的角度 = 四元.插值
+            transform.rotation = Quaternion.Lerp(transform.rotation, angle, Time.deltaTime * speedLookAt);
+        }
+    }
     #endregion
-    public GameObject playerObject;
+
     #region 事件 Event
     // 特定時間點會執行的方法，也就是城市的入口 Start 等於 Console Main,Main = Start
     //開始是在 : 遊戲開始時執行一次 - 處理初始化，取得資料等等
+    public GameObject playerObject;
+    private ThirdPersonCamera thirdPersonCamera;
     private void Start()
     {
         #region 輸出方法
@@ -373,8 +388,11 @@ public class ThirdPersonController1 : MonoBehaviour
         //取得腳本的遊戲物件可以使用關鍵字 gameObject
         //1. 物件欄位名稱.取得元件(類型(元件類型)) 當作 元件類型
         aud = playerObject.GetComponent(typeof(AudioSource)) as AudioSource;
+        rig = gameObject.GetComponent<Rigidbody>();
+        ani = GetComponent<Animator>();
         //1.泛型 可以當作Rigidbody,AudioSource,Animator
         //2.此腳本遊戲物件.取得元件<泛型>();
+        thirdPersonCamera = FindObjectOfType<ThirdPersonCamera>();
         #region 練習呼叫方法
         rig = playerObject.GetComponent<Rigidbody>();
         //3.取得元件<泛型>();
@@ -394,6 +412,7 @@ public class ThirdPersonController1 : MonoBehaviour
         CheckGround();
         Jump();
         UpdateAnimation();
+        LookAtForward();
     }
     //固定更新事件:0.02秒執行一次
     //處理物理行為，例如:Rigidbody API
