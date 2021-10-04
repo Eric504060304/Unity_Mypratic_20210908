@@ -37,15 +37,16 @@ public class ThirdPersonController1 : MonoBehaviour
     [Header("檢查地面資料")]
     [Tooltip("用來檢查角色是否在地面上")]
     public bool isGrounded;
-    public Vector3 v3CheckFroundOffset;
+    public Vector3 v3CheckGroundOffset;
     public float checkGroundRadius = 0.2f;
     [Header("音效檔案")]
     public AudioClip soundJump;
     public AudioClip soundGround;
     [Header("動畫參數")]
     public string animatorParWalk = "走路開關";
-    public string animatorParRun = "跑步開關";
-    public string animatorParJump = "跳躍開關";
+    public string animatorParIsGrounded = "是否在地板上";
+    public string animatorParAttack = "攻擊開關";
+    public string animatorParJump = "跳躍觸發";
     public string animatorParHurt = "受傷觸發";
     public string animatorParDead = "死亡開關";
 
@@ -168,8 +169,9 @@ public class ThirdPersonController1 : MonoBehaviour
     }
     */
 
-
-    public KeyCode KeyJump { get; }
+    //C#6.0存取子 可以使用 Lambda =>運算子
+    //語法: get = > {程式區塊}-單行可省略大括號
+    public bool KeyJump { get => Input.GetKeyDown(KeyCode.Space); }
     #endregion
 
     #region 方法 Method
@@ -187,15 +189,23 @@ public class ThirdPersonController1 : MonoBehaviour
     /// <param name="speedMove">移動速度</param>
     private void Move(float speedMove)
     {
+        //請取消Animator 屬性 Apply Root Motion : 勾選時使用動畫位移資訊
+        //鋼體.加速度 = 三維向量 - 加速度用來控制鋼體三個軸向的運動速度
+        //前方 = 輸入值*移動速度
+        //使用前後左右軸項運動並且保持原本的地心引力
+        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove;
+        rig.velocity = Vector3.right * MoveInput("Horizontal") * speedMove;
+        rig.velocity = Vector3.up * rig.velocity.y;
 
     }
     /// <summary>
     /// 移動按鍵輸入
     /// </summary>
+    /// <param name="axisName">要取得的軸向名稱</param>
     /// <returns>移動按鍵值</returns>
-    private float MoveInput()
+    private float MoveInput(string axisName)
     {
-        return 0;
+        return Input.GetAxis(axisName);
     }
     /// <summary>
     /// 檢查地板
@@ -203,20 +213,49 @@ public class ThirdPersonController1 : MonoBehaviour
     /// <returns>是否碰到地板</returns>
     private bool CheckGround()
     {
-        return false;
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position +
+            transform.right * v3CheckGroundOffset.x +
+            transform.up * v3CheckGroundOffset.y +
+            transform.forward * v3CheckGroundOffset.z, checkGroundRadius, 1 << 3);
+
+        isGrounded = hits.Length > 0;
+        return hits.Length > 0;
     }
     /// <summary>
     /// 跳躍
     /// </summary>
     private void Jump()
     {
-
+        //並且&&
+        //如果 在地面上 並且 按下空白鍵 就 跳躍
+        if (CheckGround() && KeyJump)
+        {
+            rig.AddForce(transform.up * jump);
+            aud.PlayOneShot(soundJump, Random.Range(0.7f, 1.5f));
+        }
     }
     /// <summary>
     /// 更新動畫
     /// </summary>
     private void UpdateAnimation()
     {
+        //當玩家往前或後移動時 true
+        //沒有按時 將設定為false
+        //垂直值 不等於 0 就代表 true
+        //垂直值 等於 0 就代表 false
+        //Input
+        //if(選擇物件)
+        //!=、== 比較運算子 (選擇條件)
+
+
+
+        ani.SetBool(animatorParWalk, MoveInput("Vertical") != 0 || MoveInput("Horizontal") != 0);
+        //設定是否在地板上 動畫參數
+        ani.SetBool(animatorParIsGrounded,isGrounded);
+        //如果 按下 跳躍鍵 就 設定跳躍觸發參數
+        //判斷式 只有一行敘述(只有一個分號)可以省略大括號
+        if (KeyJump) ani.SetTrigger(animatorParJump);
 
     }
     #region 練習方法 Method
@@ -344,7 +383,30 @@ public class ThirdPersonController1 : MonoBehaviour
     private void Update()
     {
 
+        Jump();
+    }
+    //固定更新事件:0.02秒執行一次
+    //處理物理行為，例如:Rigidbody API
+    private void FixedUpdate()
+    {
+        Move(speed);
+    }
+    //繪製圖示事件
+    //在Unity Editor 內繪製圖是輔助開發，發布後自動會隱藏
+    private void OnDrawGizmos()
+    {
+        //1. 指定顏色
+        //2. 繪製圖形
+        Gizmos.color = new Color(1, 0, 0.2f, 0.3f);
+
+        //transform 與此腳本在同階層的Transform 元件
+        Gizmos.DrawSphere(
+            transform.position +
+            transform.right * v3CheckGroundOffset.x +
+            transform.up * v3CheckGroundOffset.y +
+            transform.forward * v3CheckGroundOffset.z, checkGroundRadius);
     }
     #endregion
+
 
 }
