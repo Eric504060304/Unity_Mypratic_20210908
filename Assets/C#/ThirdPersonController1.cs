@@ -31,7 +31,7 @@ public class ThirdPersonController1 : MonoBehaviour
     // Tooltip 提示: 滑鼠停留在欄位名稱上會顯示彈出視窗
     // Range 範圍: 可使用在數值類型資料上，例如: int, float
     [Header("移動速度"), Tooltip("用來調整角色移動素度"), Range(1, 500)]
-    public float speed = 10.5f;
+    public float speed = 5.5f;
     [Header("跳躍高度"), Range(0, 1000)]
     public int jump = 100;
     [Header("檢查地面資料")]
@@ -39,6 +39,11 @@ public class ThirdPersonController1 : MonoBehaviour
     public bool isGrounded;
     public Vector3 v3CheckGroundOffset;
     public float checkGroundRadius = 0.2f;
+
+    //按鍵 列舉資料 enum
+    public KeyCode key;
+    public KeyCode move = KeyCode.W;
+    public KeyCode keyjump = KeyCode.Space;
     [Header("音效檔案")]
     public AudioClip soundJump;
     public AudioClip soundGround;
@@ -171,7 +176,7 @@ public class ThirdPersonController1 : MonoBehaviour
 
     //C#6.0存取子 可以使用 Lambda =>運算子
     //語法: get = > {程式區塊}-單行可省略大括號
-    public bool KeyJump { get => Input.GetKeyDown(KeyCode.Space); }
+    private bool keyJump { get => Input.GetKeyDown(KeyCode.Space); }
     #endregion
 
     #region 方法 Method
@@ -183,6 +188,10 @@ public class ThirdPersonController1 : MonoBehaviour
     //自訂方法: 名稱顏色為淡黃色 - 沒有被呼叫
     //自訂方法: 名稱顏色為亮黃色 - 有被呼叫
 
+    private int ReturnJump()
+    {
+        return 999;
+    }
     /// <summary>
     /// 移動
     /// </summary>
@@ -193,9 +202,9 @@ public class ThirdPersonController1 : MonoBehaviour
         //鋼體.加速度 = 三維向量 - 加速度用來控制鋼體三個軸向的運動速度
         //前方 = 輸入值*移動速度
         //使用前後左右軸項運動並且保持原本的地心引力
-        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove;
-        rig.velocity = Vector3.right * MoveInput("Horizontal") * speedMove;
-        rig.velocity = Vector3.up * rig.velocity.y;
+        rig.velocity = Vector3.forward * MoveInput("Vertical") * speedMove +
+                       Vector3.right * MoveInput("Horizontal") * speedMove +
+                       Vector3.up * rig.velocity.y;
 
     }
     /// <summary>
@@ -227,12 +236,12 @@ public class ThirdPersonController1 : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        //並且&&
+        //並且&& 運算子
         //如果 在地面上 並且 按下空白鍵 就 跳躍
-        if (CheckGround() && KeyJump)
+        if (CheckGround() && keyJump)
         {
             rig.AddForce(transform.up * jump);
-            aud.PlayOneShot(soundJump, Random.Range(0.7f, 1.5f));
+            //aud.PlayOneShot(soundJump, Random.Range(0.7f, 1.5f));
         }
     }
     /// <summary>
@@ -252,10 +261,10 @@ public class ThirdPersonController1 : MonoBehaviour
 
         ani.SetBool(animatorParWalk, MoveInput("Vertical") != 0 || MoveInput("Horizontal") != 0);
         //設定是否在地板上 動畫參數
-        ani.SetBool(animatorParIsGrounded,isGrounded);
+        ani.SetBool(animatorParIsGrounded, isGrounded);
         //如果 按下 跳躍鍵 就 設定跳躍觸發參數
         //判斷式 只有一行敘述(只有一個分號)可以省略大括號
-        if (KeyJump) ani.SetTrigger(animatorParJump);
+        if (keyJump) ani.SetTrigger(animatorParJump);
 
     }
     #region 練習方法 Method
@@ -382,8 +391,9 @@ public class ThirdPersonController1 : MonoBehaviour
     //處理持續性運動，移動物件，監聽玩家輸入按鍵
     private void Update()
     {
-
+        CheckGround();
         Jump();
+        UpdateAnimation();
     }
     //固定更新事件:0.02秒執行一次
     //處理物理行為，例如:Rigidbody API
