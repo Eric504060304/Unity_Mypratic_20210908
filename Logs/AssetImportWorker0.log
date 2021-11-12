@@ -180,3 +180,4 @@ Received Import Request.
 Start importing Assets/Prefab/男主初建模.prefab using Guid(cca107721503d9847a4b58189598322e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c142d506fab7eff00492c8f33dfb0899') in 0.040774 seconds 
   Import took 0.045930 seconds .
 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
