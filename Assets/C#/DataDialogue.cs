@@ -16,6 +16,8 @@ namespace EricDialogue
     [CreateAssetMenu(menuName = "Eric/對話資料", fileName = "NPC對話資料")]
     public class DataDialogue : ScriptableObject
     {
+        [Header("對話者苗稱")]
+        public string nameDialogue;
         //陣列: 保存相同資料類型的結構
         //TextArea 字串屬性，可設定行數
         [Header("任務前對話內容"), TextArea(2, 7)]

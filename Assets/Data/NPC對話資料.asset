@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00593ba4d7d0b664f9bb697b1c143931, type: 3}
   m_Name: "NPC\u5C0D\u8A71\u8CC7\u6599"
   m_EditorClassIdentifier: 
+  nameDialogue: "\u90A3\u9B6FTO"
   beforeMission1:
   - "\u55E8~\u6BAD\u5C4D\u4F60\u597D~"
   - "\u8ACB\u554F\u53EF\u4EE5\u5E6B\u6211\u8655\u7406\u6389\u6751\u5B50\u88E1\u7684\u4EBA\u55CE?"

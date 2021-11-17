@@ -32,6 +32,7 @@ namespace EricDialogue
         {
             CheckPlayer();
             LookAtPlayer();
+            StartDialogue();
         }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace EricDialogue
             {
                 dialogueSystem.Dialogue(dataDialogue);
             }
+            else if (!CheckPlayer()) dialogueSystem.StopDialogue();
         }
     }
 }
