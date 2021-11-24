@@ -16,24 +16,40 @@ namespace Eric.Enemy
         [Header("移動速度"), Range(0, 200)]
         public float attack = 35;
         [Header("範圍：追蹤與攻擊")]
+        [Range(0, 7)]
         public float rangeAttack = 5;
+        [Range(7, 20)]
         public float rangeTrack = 15;
         [Header("等待隨機秒數")]
         public Vector2 v2RandomWait = new Vector2(1F, 5F);
+        [Header("攻擊延遲傳送傷害時間"), Range(0, 5)]
+        public float delaySendDamage = 0.5f;
+        [Header("面相玩家速度"), Range(0, 50)]
+        public float speedLookAt = 10;
+        [Header("攻擊區域位移與尺寸")]
+        public Vector3 v3AttackOffset;
+        public Vector3 v3AttackSize = Vector3.one;
+        [Header("走路隨機秒數")]
+        public Vector2 v2RandomWalk = new Vector2(3, 7);
+        [Header("攻擊延遲時間"), Range(0, 5)]
+        public float timeAttack = 2.5f;
         #endregion
 
         #region 欄位：私人
         [SerializeField]
         private StateEnemy state; //序列畫欄位：顯示私人欄位
-
+        private Transform traPlayer;
+        private string namePlayer = "殭屍";
         private Animator ani;
         private NavMeshAgent nma;
         private string paramterIdleWalk = "走路開關";
+        private string parameterAttack = "攻擊觸發";
+        private Vector3 v3RandomWalkFinal;
+        private bool isIdle;
+        private bool isTrack;
+        private string parameterAttck = "攻擊觸發";
+        private bool isAttack;
         #endregion
-
-        [Header("攻擊區域位移與尺寸")]
-        public Vector3 v3AttackOffset;
-        public Vector3 v3AttackSize = Vector3.one;
 
 
         #region 繪製圖形
@@ -68,15 +84,12 @@ namespace Eric.Enemy
         #endregion
 
         #region 事件
-        private Transform traPlayer;
-        private string namePlayer = "殭屍";
-
-
 
         private void Awake()
         {
             ani = GetComponent<Animator>();
             nma = GetComponent<NavMeshAgent>();
+            nma.speed = speed;
             traPlayer = GameObject.Find(namePlayer).transform;
 
             nma.SetDestination(transform.position);             //導覽器 一開始就先啟動
@@ -130,10 +143,7 @@ namespace Eric.Enemy
         }
 
 
-        /// <summary>
-        /// 是否等待狀態
-        /// </summary>
-        private bool isIdle;
+
 
 
         /// <summary>
@@ -167,10 +177,6 @@ namespace Eric.Enemy
             #endregion
         }
 
-        private Vector3 v3RandomWalkFinal;
-
-        [Header("走路隨機秒數")]
-        public Vector2 v2RandomWalk = new Vector2(3, 7);
         /// <summary>
         /// 是否走路狀態
         /// </summary>
@@ -220,13 +226,7 @@ namespace Eric.Enemy
         /// </summary>
         private bool playerInTrackRange { get => Physics.OverlapSphere(transform.position, rangeTrack, 1 << 6).Length > 0; }
 
-        private bool isTrack;
 
-        [Header("攻擊時間"),Range(0,5)]
-        public float timeAttack = 2.5f;
-
-        private string parameterAttck = "攻擊觸發";
-        private bool isAttack;
         /// <summary>
         /// 追蹤玩家
         /// </summary>
@@ -256,18 +256,25 @@ namespace Eric.Enemy
         /// </summary>
         private void Attack()
         {
-            #region 進入條件
-            if (!isTrack)
-            {
-                StopAllCoroutines();
-            }
-            isTrack = true;
-            #endregion
             nma.isStopped = true;                                   //導覽器 停止
             ani.SetBool(paramterIdleWalk, false);                   //停止走路
             nma.SetDestination(traPlayer.position);
-            if (nma.remainingDistance > rangeAttack) state = StateEnemy.Track;
+            LookAtPlayer();
 
+            if (nma.remainingDistance > rangeAttack) state = StateEnemy.Track;
+            if (isAttack) return;                                   //如果 正在攻擊中 就跳出 (避免重複攻擊)
+            isAttack = true;                                        //正在攻擊中
+            ani.SetTrigger(parameterAttck);
+
+            StartCoroutine(DelaySendDamageToTarget());              //啟動延遲傳送傷害給目標協程
+        }
+        /// <summary>
+        /// 延遲傳送傷害給目標
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator DelaySendDamageToTarget()
+        {
+            yield return new WaitForSeconds(delaySendDamage);              //等待
             //物理 盒型碰撞(中心點，一半尺寸，角度，圖層)
             Collider[] hits = Physics.OverlapBox(
                 transform.position +
@@ -275,12 +282,24 @@ namespace Eric.Enemy
                 transform.up * v3AttackOffset.y +
                 transform.forward * v3AttackOffset.z,
                 v3AttackSize / 2, Quaternion.identity, 1 << 6);
+            //如果 碰撞物件數量大於 零，傳送攻擊力給碰撞物件的受傷系統
+            if (hits.Length > 0) hits[0].GetComponent<HurtSystem>().Hurt(attack);
 
-            if (hits.Length > 0) print("攻擊到的物件：" + hits[0].name);
+            float waitToNextAttack = timeAttack - delaySendDamage;          //計算剩餘冷卻時間
 
+            yield return new WaitForSeconds(waitToNextAttack);              //等待
 
+            isAttack = false;                                               //恢復  攻擊狀態
         }
         #endregion
+
+        private void LookAtPlayer()
+        {
+
+            Quaternion angle = Quaternion.LookRotation(traPlayer.position - transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, angle, Time.deltaTime * speedLookAt);
+            ani.SetBool(paramterIdleWalk, transform.rotation != angle);
+        }
     }
 
 }

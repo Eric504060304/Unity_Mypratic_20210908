@@ -50,8 +50,12 @@ namespace EricDialogue
         /// </summary>
         private void LookAtPlayer()
         {
-            Quaternion angle = Quaternion.LookRotation(target.position-transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, angle, Time.deltaTime);
+            if (CheckPlayer())
+            {
+                Quaternion angle = Quaternion.LookRotation(target.position - transform.position);
+                transform.rotation = Quaternion.Lerp(transform.rotation, angle, Time.deltaTime);
+            }
+            
         }
         
         private void StartDialogue()
