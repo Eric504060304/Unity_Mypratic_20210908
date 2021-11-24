@@ -16,13 +16,14 @@ namespace Eric
 
         private float hpEffectOriginal;
         //複寫父類別成員 override
-        public override void Hurt(float damage)
+        public override bool Hurt(float damage)
         {
             //該成員的父類別基底 父類別內的內容
             //千萬不能刪
             base.Hurt(damage);
 
             StartCoroutine(HpBarEffect());
+            return hp <= 0;
         }
         private IEnumerator HpBarEffect()
         {

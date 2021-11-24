@@ -151,7 +151,7 @@ namespace Eric.Enemy
         /// </summary>
         private void Idle()
         {
-            if (playerInTrackRange) state = StateEnemy.Track;
+            if(!targetIsDead && playerInTrackRange) state = StateEnemy.Track;
             #region 進入條件
             if (isIdle) return;
             isIdle = true;
@@ -188,6 +188,7 @@ namespace Eric.Enemy
         private void Walk()
         {
             #region 持續執行區域
+            if (!targetIsDead && playerInTrackRange) state = StateEnemy.Track;
             nma.SetDestination(v3RandomWalkFinal);                                              //代理器.設定目的地(座標)
             ani.SetBool(paramterIdleWalk, nma.remainingDistance > 0.1f);                        //走路動畫 - 離目的地距離大於0.1時走路
             #endregion
@@ -233,6 +234,9 @@ namespace Eric.Enemy
         private void Track()
         {
             #region 進入條件
+
+            
+
             if (!isTrack)
             {
                 StopAllCoroutines();
@@ -254,6 +258,8 @@ namespace Eric.Enemy
         /// <summary>
         /// 攻擊玩家
         /// </summary>
+
+        private bool targetIsDead;
         private void Attack()
         {
             nma.isStopped = true;                                   //導覽器 停止
@@ -283,13 +289,18 @@ namespace Eric.Enemy
                 transform.forward * v3AttackOffset.z,
                 v3AttackSize / 2, Quaternion.identity, 1 << 6);
             //如果 碰撞物件數量大於 零，傳送攻擊力給碰撞物件的受傷系統
-            if (hits.Length > 0) hits[0].GetComponent<HurtSystem>().Hurt(attack);
+            if (hits.Length > 0) targetIsDead = hits[0].GetComponent<HurtSystem>().Hurt(attack);
+
 
             float waitToNextAttack = timeAttack - delaySendDamage;          //計算剩餘冷卻時間
 
             yield return new WaitForSeconds(waitToNextAttack);              //等待
 
             isAttack = false;                                               //恢復  攻擊狀態
+        }
+        private void TargetDead()
+        {
+            state = StateEnemy.Walk;
         }
         #endregion
 
