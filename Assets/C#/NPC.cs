@@ -22,6 +22,10 @@ namespace EricDialogue
         #endregion
         [Header("對話系統")]
         public DialogueSystem dialogueSystem;
+        /// <summary>
+        /// 目前任務數量
+        /// </summary>
+        private int countCurrent;
         private void OnDrawGizmos()
         {
             Gizmos.color = new Color(0, 1, 0.2f, 0.3f);
@@ -65,6 +69,12 @@ namespace EricDialogue
                 dialogueSystem.Dialogue(dataDialogue);
             }
             else if (!CheckPlayer()) dialogueSystem.StopDialogue();
+        }
+
+        public void UpdateMissionCount()
+        {
+            countCurrent++;
+            if (countCurrent == dataDialogue.countNeed) dataDialogue.stateNPCMission = State.AfterMission;
         }
     }
 }

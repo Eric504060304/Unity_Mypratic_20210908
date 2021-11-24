@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
-
+using EricDialogue;
 namespace Eric.Enemy
 {
     /// <summary>
@@ -85,12 +85,26 @@ namespace Eric.Enemy
 
         #region 事件
 
+        [Header("NPC 名稱")]
+        public string nameNPC = "NPC 小明";
+
+        private NPC npc;
+        private HurtSystem hurtSystem;
         private void Awake()
         {
             ani = GetComponent<Animator>();
             nma = GetComponent<NavMeshAgent>();
             nma.speed = speed;
+
+            hurtSystem = GetComponent<HurtSystem>();
+            npc = GameObject.Find(nameNPC).GetComponent<NPC>();
+
+            //受傷系統-死亡事件觸發十 請 NPC 更新數量
+            //AddListner(方法) 添加監聽器(方法)
+            hurtSystem.onDead.AddListener(npc.UpdateMissionCount);
+
             traPlayer = GameObject.Find(namePlayer).transform;
+            npc = GameObject.Find(nameNPC).GetComponent<NPC>();
 
             nma.SetDestination(transform.position);             //導覽器 一開始就先啟動
         }

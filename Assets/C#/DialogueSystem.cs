@@ -59,14 +59,16 @@ namespace EricDialogue
         {
             textName.text = "";                     //清除 對話者
             textName.text = data.nameDialogue;      //更新 對話者
+
+            string[] dialogueContents = data.beforeMission1;    //儲存對話內容
             //遍尋每一段對話
-            for (int j = 0; j < data.beforeMission1.Length; j++)
+            for (int j = 0; j < dialogueContents.Length; j++)
             {
                 
                 textContent.text = "";  //清除 對話內容
                 goTriangle.SetActive(true); //隱藏 提示圖示
                 //遍尋對話每一個字
-                for (int i = 0; i < data.beforeMission1[j].Length; i++)
+                for (int i = 0; i < dialogueContents[j].Length; i++)
                 {
                     textContent.text += data.beforeMission1[j][i];
                     yield return new WaitForSeconds(dialogueInterval);
