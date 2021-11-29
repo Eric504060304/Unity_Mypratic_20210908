@@ -32,6 +32,17 @@ namespace EricDialogue
             Gizmos.DrawSphere(transform.position, checkPlayerRadius);
 
         }
+
+        private void Awake()
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            dataDialogue.stateNPCMission = State.BeforeMission;
+        }
+
         private void Update()
         {
             CheckPlayer();
@@ -62,11 +73,18 @@ namespace EricDialogue
             
         }
         
+        /// <summary>
+        /// 玩家進入範圍內 並且 按下指定案件 請對話框執行 開始對話
+        /// 玩家退出範圍外 停止對話
+        /// 任務前、任務中、任務後
+        /// </summary>
         private void StartDialogue()
         {
             if (CheckPlayer() && startDialgueKey)
             {
                 dialogueSystem.Dialogue(dataDialogue);
+                if (dataDialogue.stateNPCMission == State.BeforeMission)
+                    dataDialogue.stateNPCMission = State.Missionning;
             }
             else if (!CheckPlayer()) dialogueSystem.StopDialogue();
         }
@@ -74,7 +92,8 @@ namespace EricDialogue
         public void UpdateMissionCount()
         {
             countCurrent++;
-            if (countCurrent == dataDialogue.countNeed) dataDialogue.stateNPCMission = State.AfterMission;
+            if (countCurrent == dataDialogue.countNeed) 
+                dataDialogue.stateNPCMission = State.AfterMission;
         }
     }
 }

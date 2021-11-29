@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.Events;
 namespace EricDialogue
 {
     /// <summary>
@@ -18,6 +19,8 @@ namespace EricDialogue
         public float dialogueInterval = 0.3f;
         [Header("對話案件")]
         public KeyCode dialogueKey = KeyCode.Space;
+        [Header("打字事件")]
+        public UnityEvent onType;
         /// <summary>
         /// 開始對話
         /// </summary>
@@ -60,7 +63,22 @@ namespace EricDialogue
             textName.text = "";                     //清除 對話者
             textName.text = data.nameDialogue;      //更新 對話者
 
-            string[] dialogueContents = data.beforeMission1;    //儲存對話內容
+            string[] dialogueContents = { };    //儲存對話內容
+
+            switch (data.stateNPCMission)
+            {
+                case State.BeforeMission:
+                    dialogueContents = data.beforeMission1;
+                    break;
+                case State.Missionning:
+                    dialogueContents = data.Missioning;
+                    break;
+                case State.AfterMission:
+                    dialogueContents = data.afterMission1;
+                    break;
+                default:
+                    break;
+            }
             //遍尋每一段對話
             for (int j = 0; j < dialogueContents.Length; j++)
             {
@@ -70,6 +88,7 @@ namespace EricDialogue
                 //遍尋對話每一個字
                 for (int i = 0; i < dialogueContents[j].Length; i++)
                 {
+                    onType.Invoke();
                     textContent.text += data.beforeMission1[j][i];
                     yield return new WaitForSeconds(dialogueInterval);
                 }

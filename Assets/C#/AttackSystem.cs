@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 namespace Eric
 {
@@ -11,15 +12,20 @@ namespace Eric
     {
 
         #region 欄位：公開
-        [Header("攻擊力"),Range(0,500)]
+        [Header("攻擊力"), Range(0, 500)]
         public float attack = 20;
         [Header("攻擊冷卻時間"), Range(0, 5)]
         public float timeAttack = 1.3f;
         [Header("延遲傳送傷害的時間"), Range(0, 3)]
         public float delaySendDamage = 0.2f;
+        public string parameterWalk = "走路開關";
         [Header("攻擊區域尺寸與位移")]
         public Vector3 v3AttackOffset;
         public Vector3 v3AttackSize = Vector3.one;
+        [Header("攻擊圖層遮色片")]
+        public AvatarMask maskAttack;
+
+        public UnityEvent onAttacks;
         #endregion
 
         #region 欄位：私人
@@ -62,9 +68,28 @@ namespace Eric
         /// </summary>
         private void Attack()
         {
-            if (keyAttack)
+
+
+
+            #region 攻擊圖層遮色片處理
+            bool isWalk = ani.GetBool(parameterWalk);
+
+            // 左腳、右腳、左右腳 IK 與根部
+            maskAttack.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftLeg, !isWalk);
+            maskAttack.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightLeg, !isWalk);
+            maskAttack.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftFootIK, !isWalk);
+            maskAttack.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightFootIK, !isWalk);
+            maskAttack.SetHumanoidBodyPartActive(AvatarMaskBodyPart.Root, !isWalk);
+            #endregion
+
+            if (keyAttack && !isAttack)
             {
+
+                onAttacks.Invoke();
                 StartCoroutine(DelayHit());
+                ani.SetTrigger(parameterAttack);
+                StartCoroutine(DelayHit());
+
             }
         }
 
@@ -82,7 +107,7 @@ namespace Eric
             float waitToNextAttack = timeAttack - delaySendDamage;
             yield return new WaitForSeconds(waitToNextAttack);
             isAttack = false;
-            
+
         }
         #endregion
     }
