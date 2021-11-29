@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace EricDialogue
 {
@@ -10,18 +11,21 @@ namespace EricDialogue
     public class NPC : MonoBehaviour
     {
         #region 欄位與屬性
+
         [Header("對話資料")]
         public DataDialogue dataDialogue;
         [Header("相關資訊"), Range(0, 10)]
         public float checkPlayerRadius = 3f;
-        [Range(0,10)]
-        public float speedLook=3;
+        [Range(0, 10)]
+        public float speedLook = 3;
         public GameObject goTip;
         private Transform target;
         private bool startDialgueKey { get => Input.GetKeyDown(KeyCode.E); }
         #endregion
         [Header("對話系統")]
         public DialogueSystem dialogueSystem;
+        [Header("完成任務事件")]
+        public UnityEvent onFinish;
         /// <summary>
         /// 目前任務數量
         /// </summary>
@@ -70,9 +74,9 @@ namespace EricDialogue
                 Quaternion angle = Quaternion.LookRotation(target.position - transform.position);
                 transform.rotation = Quaternion.Lerp(transform.rotation, angle, Time.deltaTime);
             }
-            
+
         }
-        
+
         /// <summary>
         /// 玩家進入範圍內 並且 按下指定案件 請對話框執行 開始對話
         /// 玩家退出範圍外 停止對話
@@ -92,8 +96,13 @@ namespace EricDialogue
         public void UpdateMissionCount()
         {
             countCurrent++;
-            if (countCurrent == dataDialogue.countNeed) 
+            if (countCurrent == dataDialogue.countNeed)
+            {
                 dataDialogue.stateNPCMission = State.AfterMission;
+                onFinish.Invoke();
+            }
+                
+            
         }
     }
 }
