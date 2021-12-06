@@ -1004,7 +1004,7 @@ Terrain:
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
+  m_MaterialTemplate: {fileID: 2100000, guid: 22ff8771d87ef27429e670136399094b, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -2452,7 +2452,7 @@ MonoBehaviour:
   parameterWalk: "\u8D70\u8DEF\u958B\u95DC"
   v3AttackOffset: {x: 0, y: 1, z: 1}
   v3AttackSize: {x: 1, y: 1, z: 1}
-  maskAttack: {fileID: 0}
+  maskAttack: {fileID: 31900000, guid: de452622936a55347ab961fdab254b48, type: 2}
   onAttacks:
     m_PersistentCalls:
       m_Calls: []
@@ -3406,7 +3406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1194816530
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5195,9 +5195,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 859493809}
-  speedTrack: 10
-  speedTurnHorizontal: 15
-  speedTurnVertical: 10
+  speedTrack: 58.3
+  speedTurnHorizontal: 59.4
+  speedTurnVertical: 61.9
   limitAngleX: {x: -0.2, y: 0.2}
   limitAngleFromTarget: {x: -0.2, y: 0}
 --- !u!1 &1961796413
